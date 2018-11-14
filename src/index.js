@@ -22,13 +22,6 @@ class HelloMessage extends React.Component {
 
     componentDidMount()
     {
-        setTimeout(() => {
-            this.init()
-        }, 2000)
-    }
-
-    init()
-    {
         ScatterJS.scatter.connect('eos').then(connected => {
             if (!connected) return false;
             const scatter = ScatterJS.scatter;
@@ -40,15 +33,18 @@ class HelloMessage extends React.Component {
         });
     }
 
+
+
     createTodo()
     {
+        alert("create todo")
         this.state.scatter.getIdentity({accounts:network}).then(() => {
-            const account = this.state.scatter.identity.accounts.find(x => x.blockchain === 'eos');
+         //   const account = this.state.scatter.identity.accounts.find(x => x.blockchain === 'eos');
             const eos = this.state.scatter.eos(network, Eos);
-            const transactionPermission = {authorization: [`${account.name}@${account.authority}`]};
+            const transactionPermission = {authorization: [`uu@active`]};
             const num = Math.floor(Math.random() * 100000);
-            eos.contract(account.name).then(ins => {
-                ins.create(account.name, num, "this is " + num, transactionPermission).then(res => {
+            eos.contract("uu").then(ins => {
+                ins.issue("uu", 20000, "this is " + num, transactionPermission).then(res => {
                     console.log(res)
                 })
             })
