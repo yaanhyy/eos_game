@@ -9,6 +9,13 @@ import Eos from 'eosjs';
 
 ScatterJS.plugins(new ScatterEOS());
 
+const requiredFields = {
+    accounts:[
+        {blockchain:'eos', host:'127.0.0.1', port:7777, chainId:'cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f'},
+    ]
+};
+
+
 const network = {
     blockchain: 'eos',
     protocol: 'http',
@@ -16,6 +23,7 @@ const network = {
     port: 7777,
     chainId:         'cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f'
 }
+
 //ReactDOM.render(<App />, document.getElementById('root'));
 class HelloMessage extends React.Component {
 
@@ -38,13 +46,15 @@ class HelloMessage extends React.Component {
     createTodo()
     {
         alert("create todo")
-        this.state.scatter.getIdentity({accounts:network}).then(() => {
-         //   const account = this.state.scatter.identity.accounts.find(x => x.blockchain === 'eos');
+        this.state.scatter.getIdentity(requiredFields).then(() => {
+            const account = this.state.scatter.identity.accounts.find(x => x.blockchain === 'eos');
             const eos = this.state.scatter.eos(network, Eos);
-            const transactionPermission = {authorization: [`uu@active`]};
+
+            const transactionPermission = {authorization: [`${account.name}@${account.authority}`]};
+            alert(transactionPermission)
             const num = Math.floor(Math.random() * 100000);
-            eos.contract("uu").then(ins => {
-                ins.issue("uu", 20000, "this is " + num, transactionPermission).then(res => {
+            eos.contract(account.name).then(ins => {
+                ins.issue(account.name, 20000, "issure to"+account.name, transactionPermission).then(res => {
                     console.log(res)
                 })
             })
