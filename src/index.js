@@ -51,10 +51,10 @@ class HelloMessage extends React.Component {
             const eos = this.state.scatter.eos(network, Eos);
 
             const transactionPermission = {authorization: [`${account.name}@${account.authority}`]};
-            alert(transactionPermission)
+            alert(account.name)
             const num = Math.floor(Math.random() * 100000);
-            eos.contract(account.name).then(ins => {
-                ins.issue(account.name, 20000, "issure to"+account.name, transactionPermission).then(res => {
+            eos.contract('eosio.token').then(ins => {
+                ins.transfer(account.name, 'yy', '2000.0000 EOS', "transfer from"+account.name, transactionPermission).then(res => {
                     console.log(res)
                 })
             })
