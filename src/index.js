@@ -78,7 +78,7 @@ class HelloMessage extends React.Component {
             })
              window.ethereum.enable().then(function(accounts) {
                 console.log(accounts[0]);
-                 window.ethereum.d
+
                 // expected output: "Success!"
             });
 
@@ -93,6 +93,26 @@ class HelloMessage extends React.Component {
                         publicAddress = result;
                         console.log("web3.eth.getCoinbase " + result);
                         window.web3.personal.sign("Hello from Toptal!", publicAddress, console.log);
+                        const amountWei = window.web3.toWei(1, 'ether');
+                        const web3 = window.web3;
+                        web3.eth.getTransactionCount(publicAddress, (error, txCount) => {
+                            if (error) {
+                                console.log(error);
+                            }
+                            web3.eth.sendTransaction({
+                                nonce: txCount,
+                                from: publicAddress,
+                                to: "0x5CDb3d471f319a481A375F95Ee557Ce3ACB3588c",
+                                value: amountWei
+                            }, (err, transactionId) => {
+                                if (err) {
+                                    console.log(error);
+                                } else {
+                                    console.log("trx_id:"+transactionId)
+                                }
+                            });
+                        });
+
                     }
                 });
                 console.log('passed');
@@ -101,6 +121,10 @@ class HelloMessage extends React.Component {
                 console.log(err);
             }
             console.debug("login success")
+
+
+
+
         //    web3js.eth.sendTransaction({ to: '0xFD7cDBf6cC424bfa04C556b3863a62b57209f40B',
         //        from: '0xdE0A3ceA919408170d0FB083fFDfc84C84E57d61',
         //        value: web3.utils.toWei('1', 'ether')});
