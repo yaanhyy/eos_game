@@ -1,0 +1,3 @@
+https://metamask.github.io/metamask-docs/API_Reference/JSON_RPC_API
+https://web3js.readthedocs.io/en/1.0/web3-eth-accounts.html#eth-accounts
+https://medium.com/coinmonks/react-web-dapp-with-metamask-web3-sotp-part-4-f252ebe8d07f
