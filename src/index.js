@@ -6,7 +6,7 @@ import * as serviceWorker from './serviceWorker';
 import ScatterJS from 'scatterjs-core';
 import ScatterEOS from 'scatterjs-plugin-eosjs';
 import Eos from 'eosjs';
-
+import Web3 from "web3"
 ScatterJS.plugins(new ScatterEOS());
 
 const requiredFields = {
@@ -41,11 +41,81 @@ class HelloMessage extends React.Component {
         });
     }
 
-
-
-    createTodo()
+    ethTodo()
     {
-        alert("create todo")
+        console.debug("eth todo");
+        if (typeof window.ethereum!== 'undefined') {
+        //     window.web3.eth.getAccounts(function (err, accounts) {
+        //         if (accounts.length == 0) {
+        //
+        //         }
+        //         console.debug(accounts.length);
+        //     });
+             console.debug(window.ethereum.currentProvider);
+        //
+             let web3js = new Web3(window.web3.currentProvider);
+
+            window.web3.version.getNetwork((err, netId) => {
+                switch (netId) {
+                    case "1":
+                        console.log('This is mainnet')
+                        break
+                    case "2":
+                        console.log('This is the deprecated Morden test network.')
+                        break
+                    case "3":
+                        console.log('This is the ropsten test network.')
+                        break
+                    case "4":
+                        console.log('This is the Rinkeby test network.')
+                        break
+                    case "42":
+                        console.log('This is the Kovan test network.')
+                        break
+                    default:
+                        console.log('This is an unknown network.'+netId)
+                }
+            })
+             window.ethereum.enable().then(function(accounts) {
+                console.log(accounts[0]);
+                 window.ethereum.d
+                // expected output: "Success!"
+            });
+
+            let publicAddress = window.web3.coinbase;
+            console.log(publicAddress);
+            try {
+
+                web3js.eth.getCoinbase(function (err, result) {
+                    if (err) {
+                        console.log("web3.eth.getCoinbase error = " + err);
+                    } else {
+                        publicAddress = result;
+                        console.log("web3.eth.getCoinbase " + result);
+                        window.web3.personal.sign("Hello from Toptal!", publicAddress, console.log);
+                    }
+                });
+                console.log('passed');
+            } catch (err) {
+                console.log('failed');
+                console.log(err);
+            }
+            console.debug("login success")
+        //    web3js.eth.sendTransaction({ to: '0xFD7cDBf6cC424bfa04C556b3863a62b57209f40B',
+        //        from: '0xdE0A3ceA919408170d0FB083fFDfc84C84E57d61',
+        //        value: web3.utils.toWei('1', 'ether')});
+        //    window.web3.personal.sign("Hello from Toptal!", window.web3.eth.coinbase, console.log);
+
+        } else {
+
+            alert("No currentProvider for web3");
+        }
+    }
+
+    eosTodo()
+    {
+        alert("eos todo")
+
         this.state.scatter.getIdentity(requiredFields).then(() => {
             const account = this.state.scatter.identity.accounts.find(x => x.blockchain === 'eos');
             const eos = this.state.scatter.eos(network, Eos);
@@ -69,8 +139,8 @@ class HelloMessage extends React.Component {
                 Hello {this.props.name}
                 bye {this.props.bye}
                 <div>
-                    <button onClick={() => this.createTodo()}>create todo</button>
-                    <button onClick={() => this.deleteTodo()}>delete todo</button>
+                    <button onClick={() => this.eosTodo()}>eos todo</button>
+                    <button onClick={() => this.ethTodo()}>eth todo</button>
                     <input type="text" onChange={e => {
                         this.setState({
                             deleteId: Number.parseInt(e.target.value)
