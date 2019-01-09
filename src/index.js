@@ -156,6 +156,7 @@ class HelloMessage extends React.Component {
             let abiArray = abiJson;
             let fromAddress = "0xfd7cdbf6cc424bfa04c556b3863a62b57209f40b";
             let toAddress = "0x5cdb3d471f319a481a375f95ee557ce3acb3588c";
+            let web3 = window.web3;
             let web3js = new Web3(window.web3.currentProvider);
             let contractAddress = "0x7bf09685b164d2491c4839ece2cb102a1d6a7a65";
             let contract = new web3js.eth.Contract(abiArray, contractAddress, {
@@ -170,8 +171,10 @@ class HelloMessage extends React.Component {
                     }
                 }
             );
+
+
             let amount = 1;
-            let tokenAmount = web3js.utils.toWei(amount.toString(), 'ether')
+            let tokenAmount = web3js.utils.toWei(amount.toString(), 'ether');
 
 
 
@@ -194,6 +197,20 @@ class HelloMessage extends React.Component {
                 "gasPrice": web3js.utils.toHex(Math.trunc(currentGasPrices.medium * 1e9)),
                 "chainId": chainIdHex
             };
+            web3js.eth.getCoinbase(function (err, result) {
+                if (err) {
+                    console.log("web3.eth.getCoinbase error = " + err);
+                } else {
+                    let publicAddress = result;
+                    console.log("web3.eth.getCoinbase " + result);
+
+                    const web3 = window.web3;
+
+                    contract.methods.transfer(toAddress, tokenAmount).send({from:publicAddress, gas: 300000});
+
+
+                }
+            });
         }
     }
 
