@@ -10,6 +10,7 @@
     "react-scripts": "^2.1.3",
     "scatterjs-core": "^2.3.8",
     "scatterjs-plugin-eosjs": "^1.3.10",
+    "scatterjs-plugin-web3": "^1.4.0",
     "web3": "^1.0.0-beta.37"
   },
   "scripts": {
