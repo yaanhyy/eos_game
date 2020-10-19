@@ -86,7 +86,7 @@ class HelloMessage extends React.Component {
     //     });
     // }
 
-    ethTodo() {
+    async ethTodo() {
         console.debug("eth todo");
         if (typeof window.ethereum !== 'undefined') {
             console.debug(window.ethereum.currentProvider);
@@ -121,6 +121,7 @@ class HelloMessage extends React.Component {
 
             let publicAddress = window.web3.coinbase;
             console.log(publicAddress);
+            const currentGasPrices = await GetCurrentGasPrices();
             try {
 
                 web3js.eth.getCoinbase(function (err, result) {
@@ -139,7 +140,7 @@ class HelloMessage extends React.Component {
                             web3.eth.sendTransaction({
                                 nonce: txCount,
                                 from: publicAddress,
-                                to: "0x5CDb3d471f319a481A375F95Ee557Ce3ACB3588c",
+                                to: "0x212781FF156e7e24A4b7aDCc965b5aDe781Dea67",
                                 value: amountWei
                             }, (err, transactionId) => {
                                 if (err) {
@@ -171,7 +172,7 @@ class HelloMessage extends React.Component {
         if (typeof window.ethereum !== 'undefined') {
 
             let fromAddress = "0xfd7cdbf6cc424bfa04c556b3863a62b57209f40b";
-            let toAddress = "0x5cdb3d471f319a481a375f95ee557ce3acb3588c";
+            let toAddress = "0x212781FF156e7e24A4b7aDCc965b5aDe781Dea67";
             let web3 = window.web3;
             let web3js = new Web3(window.web3.currentProvider);
             let contractAddress = "0x7bf09685b164d2491c4839ece2cb102a1d6a7a65";
@@ -262,7 +263,7 @@ class HelloMessage extends React.Component {
             let web3js = new Web3(window.web3.currentProvider);
             let contractAddress = "0x8b907e3163924aa887066215d8d065695f028f89";
             let fromAddress = "0x8c4fFCc692AF5d1000277e676819b405A0Fa8478";
-            let toAddress = "0x5cdb3d471f319a481a375f95ee557ce3acb3588c";
+            let toAddress = "0x212781FF156e7e24A4b7aDCc965b5aDe781Dea67";
             let contract = new web3js.eth.Contract(abiJsonUUToken, contractAddress, {
                 from: fromAddress
             });
