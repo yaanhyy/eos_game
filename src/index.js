@@ -3,15 +3,15 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import ScatterJS from 'scatterjs-core';
-import ScatterEOS from 'scatterjs-plugin-eosjs';
-import ScatterWEB3 from 'scatterjs-plugin-web3';
-import Eos from 'eosjs';
+// import ScatterJS from 'scatterjs-core';
+// import ScatterEOS from 'scatterjs-plugin-eosjs';
+// import ScatterWEB3 from 'scatterjs-plugin-web3';
+// import Eos from 'eosjs';
 import Web3 from "web3";
 import Axios from "axios"
 import UUTokenAbi from './UUToken_abi';
 
-ScatterJS.plugins(new ScatterEOS());
+//ScatterJS.plugins(new ScatterEOS());
 
 const requiredFields = {
     accounts: [
@@ -74,17 +74,17 @@ async function GetCurrentGasPrices() {
 class HelloMessage extends React.Component {
 
 
-    componentDidMount() {
-        ScatterJS.scatter.connect('eos').then(connected => {
-            if (!connected) return false;
-            const scatter = ScatterJS.scatter;
-
-            this.setState({
-                scatter
-            });
-            alert("scatter load success")
-        });
-    }
+    // componentDidMount() {
+    //     ScatterJS.scatter.connect('eos').then(connected => {
+    //         if (!connected) return false;
+    //         const scatter = ScatterJS.scatter;
+    //
+    //         this.setState({
+    //             scatter
+    //         });
+    //         alert("scatter load success")
+    //     });
+    // }
 
     ethTodo() {
         console.debug("eth todo");
@@ -234,26 +234,26 @@ class HelloMessage extends React.Component {
         }
     }
 
-    eosTodo() {
-        alert("eos todo")
-
-        this.state.scatter.getIdentity(requiredFields).then(() => {
-            const account = this.state.scatter.identity.accounts.find(x => x.blockchain === 'eos');
-            const eos = this.state.scatter.eos(network, Eos);
-
-            const transactionPermission = {authorization: [`${account.name}@${account.authority}`]};
-            alert(account.name)
-            const num = Math.floor(Math.random() * 100000);
-            eos.contract('eosio.token').then(ins => {
-                ins.transfer(account.name, 'yy', '2000.0000 EOS', "transfer from" + account.name, transactionPermission).then(res => {
-                    console.log(res)
-                })
-            })
-
-        }).catch(error => {
-            console.error(error);
-        });
-    }
+    // eosTodo() {
+    //     alert("eos todo")
+    //
+    //     this.state.scatter.getIdentity(requiredFields).then(() => {
+    //         const account = this.state.scatter.identity.accounts.find(x => x.blockchain === 'eos');
+    //         const eos = this.state.scatter.eos(network, Eos);
+    //
+    //         const transactionPermission = {authorization: [`${account.name}@${account.authority}`]};
+    //         alert(account.name)
+    //         const num = Math.floor(Math.random() * 100000);
+    //         eos.contract('eosio.token').then(ins => {
+    //             ins.transfer(account.name, 'yy', '2000.0000 EOS', "transfer from" + account.name, transactionPermission).then(res => {
+    //                 console.log(res)
+    //             })
+    //         })
+    //
+    //     }).catch(error => {
+    //         console.error(error);
+    //     });
+    // }
 
     async mintTodo()
     {
@@ -325,7 +325,7 @@ class HelloMessage extends React.Component {
                 Hello {this.props.name}
                 bye {this.props.bye}
                 <div>
-                    <button onClick={() => this.eosTodo()}>eos todo</button>
+                    {/*<button onClick={() => this.eosTodo()}>eos todo</button>*/}
                     <button onClick={() => this.ethTodo()}>eth todo</button>
                     <input type="text" onChange={e => {
                         this.setState({
