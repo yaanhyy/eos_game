@@ -3,45 +3,10 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-// import ScatterJS from 'scatterjs-core';
-// import ScatterEOS from 'scatterjs-plugin-eosjs';
-// import ScatterWEB3 from 'scatterjs-plugin-web3';
-// import Eos from 'eosjs';
+
 import Web3 from "web3";
 import Axios from "axios"
 import UUTokenAbi from './UUToken_abi';
-
-//ScatterJS.plugins(new ScatterEOS());
-
-const requiredFields = {
-    accounts: [
-        {
-            blockchain: 'eos',
-            host: '127.0.0.1',
-            port: 7777,
-            chainId: 'cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f'
-        },
-    ]
-};
-
-const requiredEthFields = {
-    accounts: [
-        {
-            blockchain: 'eth',
-            host: '127.0.0.1',
-            port: 8545,
-            chainId: '50'
-        },
-    ]
-};
-
-const network = {
-    blockchain: 'eos',
-    protocol: 'http',
-    host: '127.0.0.1',
-    port: 7777,
-    chainId: 'cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f'
-}
 
 let abiStr = "[{\"constant\":true,\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_spender\",\"type\":\"address\"},{\"name\":\"_value\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[{\"name\":\"success\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"totalSupply\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"status\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_from\",\"type\":\"address\"},{\"name\":\"_to\",\"type\":\"address\"},{\"name\":\"_value\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[{\"name\":\"success\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"decimals\",\"outputs\":[{\"name\":\"\",\"type\":\"uint8\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"controller1\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_owner\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"name\":\"balance\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"symbol\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_to\",\"type\":\"address\"},{\"name\":\"_value\",\"type\":\"uint256\"}],\"name\":\"transfer\",\"outputs\":[{\"name\":\"success\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"controller2\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_owner\",\"type\":\"address\"},{\"name\":\"_spender\",\"type\":\"address\"}],\"name\":\"allowance\",\"outputs\":[{\"name\":\"remaining\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"_from\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"_to\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"_value\",\"type\":\"uint256\"}],\"name\":\"Transfer\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"_owner\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"_spender\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"_value\",\"type\":\"uint256\"}],\"name\":\"Approval\",\"type\":\"event\"},{\"constant\":false,\"inputs\":[],\"name\":\"turnon\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"turnoff\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]";
 let abiJson = JSON.parse(abiStr)
@@ -72,21 +37,14 @@ async function GetCurrentGasPrices() {
 
 //ReactDOM.render(<App />, document.getElementById('root'));
 class HelloMessage extends React.Component {
+    constructor(props) {
+        super(props);
+    }
 
+    componentDidMount() {
+    }
 
-    // componentDidMount() {
-    //     ScatterJS.scatter.connect('eos').then(connected => {
-    //         if (!connected) return false;
-    //         const scatter = ScatterJS.scatter;
-    //
-    //         this.setState({
-    //             scatter
-    //         });
-    //         alert("scatter load success")
-    //     });
-    // }
-
-    async ethTodo() {
+    async ethTodo(to, amount) {
         console.debug("eth todo");
         if (typeof window.ethereum !== 'undefined') {
             console.debug(window.ethereum.currentProvider);
@@ -131,7 +89,7 @@ class HelloMessage extends React.Component {
                         publicAddress = result;
                         console.log("web3.eth.getCoinbase " + result);
                         window.web3.personal.sign("Hello from Toptal!", publicAddress, console.log);
-                        const amountWei = window.web3.toWei(1, 'ether');
+                        const amountWei = window.web3.toWei(amount, 'ether');
                         const web3 = window.web3;
                         web3.eth.getTransactionCount(publicAddress, (error, txCount) => {
                             if (error) {
@@ -139,8 +97,9 @@ class HelloMessage extends React.Component {
                             }
                             web3.eth.sendTransaction({
                                 nonce: txCount,
+                                gasPrice: currentGasPrices.high,
                                 from: publicAddress,
-                                to: "0x212781FF156e7e24A4b7aDCc965b5aDe781Dea67",
+                                to: to,
                                 value: amountWei
                             }, (err, transactionId) => {
                                 if (err) {
@@ -235,26 +194,6 @@ class HelloMessage extends React.Component {
         }
     }
 
-    // eosTodo() {
-    //     alert("eos todo")
-    //
-    //     this.state.scatter.getIdentity(requiredFields).then(() => {
-    //         const account = this.state.scatter.identity.accounts.find(x => x.blockchain === 'eos');
-    //         const eos = this.state.scatter.eos(network, Eos);
-    //
-    //         const transactionPermission = {authorization: [`${account.name}@${account.authority}`]};
-    //         alert(account.name)
-    //         const num = Math.floor(Math.random() * 100000);
-    //         eos.contract('eosio.token').then(ins => {
-    //             ins.transfer(account.name, 'yy', '2000.0000 EOS', "transfer from" + account.name, transactionPermission).then(res => {
-    //                 console.log(res)
-    //             })
-    //         })
-    //
-    //     }).catch(error => {
-    //         console.error(error);
-    //     });
-    // }
 
     async mintTodo()
     {
@@ -309,17 +248,6 @@ class HelloMessage extends React.Component {
         }
     }
 
-    // ethScatter()
-    // {
-    //     this.state.scatter.getIdentity(requiredEthFields).then(() => {
-    //         const account = this.state.scatter.identity.accounts.find(x => x.blockchain === 'eth');
-    //         console.log(account)
-    //
-    //     }).catch(error => {
-    //         console.error(error);
-    //     });
-    // }
-
     render() {
         return (
             <div>
@@ -327,12 +255,21 @@ class HelloMessage extends React.Component {
                 bye {this.props.bye}
                 <div>
                     {/*<button onClick={() => this.eosTodo()}>eos todo</button>*/}
-                    <button onClick={() => this.ethTodo()}>eth todo</button>
-                    <input type="text" onChange={e => {
+                    <button onClick={() => this.ethTodo(this.state.to, this.state.amount)}>eth todo</button>
+                    <p>to: <input type="text" onChange={e => {
                         this.setState({
-                            deleteId: Number.parseInt(e.target.value)
+                            to: e.target.value
                         })
-                    }}/>
+                    }}/></p>
+
+                    <p>amount: <input type="text" onChange={e => {
+                        this.setState({
+                            amount: Number.parseInt(e.target.value)
+                        })
+                    }}/></p>
+
+
+
 
                     <button onClick={() => this.transferTodo()}>eth token transfer todo</button>
                     <input type="text" onChange={e => {
