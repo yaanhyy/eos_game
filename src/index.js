@@ -277,6 +277,82 @@ class HelloMessage extends React.Component {
         }
     }
 
+    async addLiquidityTodo(amount_a, amount_b)
+    {
+        if (typeof window.ethereum !== 'undefined') {
+            // let toAddress = "0x212781FF156e7e24A4b7aDCc965b5aDe781Dea67";
+            let web3 = window.web3;
+            let web3js = new Web3(window.web3.currentProvider);
+            window.ethereum.enable().catch(error => {
+                // User denied account access
+                console.log(error)
+            })
+            let fromAddress = await web3js.eth.getCoinbase();
+            console.log("address:%s", fromAddress);
+            let contractAddress = "0x7a250d5630b4cf539739df2c5dacb4c659f2488d";
+
+            let chain_id = await web3js.eth.net.getId();
+            console.log("chan_id:%d",chain_id);
+
+            let uutoken_abi_text = await fetch('/uni_router_v2_abi').then((r) => r.json());
+            console.log(uutoken_abi_text);
+            // let abiJson = JSON.stringify(UUTokenAbi);
+            // console.log(abiJson);
+            let contract = new web3js.eth.Contract(uutoken_abi_text, contractAddress);
+            console.log(contract);
+
+
+
+            let tokenAmount = web3js.utils.toWei(amount_b.toString(), 'ether');
+            console.log(`tokenAmount ${tokenAmount}`);
+
+
+            const currentGasPrices = await GetCurrentGasPrices();
+            let nonce = await web3js.eth.getTransactionCount(fromAddress);
+// Will call estimate the gas a method execution will take when executed in the EVM without.
+
+
+            const nonceHex = web3js.utils.toHex(nonce)
+            console.log(`nonceHex ${nonceHex}`);
+
+            let chainIdHex= web3js.utils.toHex(chain_id);
+            // let transaction = {
+            //     "value": '0x0', // Only tokens
+            //     "data": contract.methods.mint(toAddress, token_id).encodeABI(),
+            //     "from": fromAddress,
+            //     "to": contractAddress,
+            //     "nonce": nonceHex,
+            //     //"gas": web3.utils.toHex(estimateGas),
+            //     "gasLimit": '0x30D40',
+            //     // "gasLimit": web3.utils.toHex(estimateGas),
+            //     "gasPrice": web3js.utils.toHex(Math.trunc(currentGasPrices.medium * 1e9)),
+            //     "chainId": chainIdHex
+            // };
+            const amountWei = window.web3.toWei(amount_b, 'ether');
+            console.log(`amountWei ${amountWei}`);
+            web3js.eth.getAccounts(function (err, result) {
+                if (err) {
+                    console.log("web3.eth.getCoinbase error = " + err);
+                } else {
+                    let publicAddress = result[3];
+                    console.log("web3.eth.getCoinbase " + result);
+                    let UUTOKEN = "0xc724803f50125fbde2214a1b6153818d7c14d791";
+                        contract.methods.addLiquidityETH(UUTOKEN, amount_a, amount_a, amountWei, fromAddress,1902744648).send({from:fromAddress, gas: 3000000, value: amountWei*2}, function (error, result) {
+                        if (error != null) {
+                            console.log(error)
+                        }
+                        else {
+                            console.log(result)
+                        }
+                    });
+
+
+                }
+            });
+        }
+    }
+
+
     render() {
         return (
             <div>
@@ -315,6 +391,18 @@ class HelloMessage extends React.Component {
                     <p>amount:<input type="text" onChange={e => {
                         this.setState({
                             amount: Number.parseInt(e.target.value)
+                        })
+                    }}/></p>
+
+                    <button onClick={() => this.addLiquidityTodo(this.state.token_a_amount, this.state.token_b_amount)}>add liquidity todo</button>
+                    <p>token a amount:<input type="text" onChange={e => {
+                        this.setState({
+                            token_a_amount: Number.parseInt(e.target.value)
+                        })
+                    }}/></p>
+                    <p>token b amount:<input type="text" onChange={e => {
+                        this.setState({
+                            token_b_amount: Number.parseInt(e.target.value)
                         })
                     }}/></p>
                 </div>
