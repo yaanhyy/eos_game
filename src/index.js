@@ -137,6 +137,10 @@ class HelloMessage extends React.Component {
            // let toAddress = "0x212781FF156e7e24A4b7aDCc965b5aDe781Dea67";
             let web3 = window.web3;
             let web3js = new Web3(window.web3.currentProvider);
+            window.ethereum.enable().catch(error => {
+                // User denied account access
+                console.log(error)
+            })
             let fromAddress = await web3js.eth.getCoinbase();
             console.log("address:%s", fromAddress);
             let contractAddress = "0xC724803f50125FBdE2214A1B6153818d7c14d791";
@@ -200,45 +204,61 @@ class HelloMessage extends React.Component {
     }
 
 
-    async mintTodo()
+    async mintTodo(amount)
     {
         if (typeof window.ethereum !== 'undefined') {
+            // let toAddress = "0x212781FF156e7e24A4b7aDCc965b5aDe781Dea67";
             let web3 = window.web3;
             let web3js = new Web3(window.web3.currentProvider);
-            let contractAddress = "0x8b907e3163924aa887066215d8d065695f028f89";
-            let fromAddress = "0x8c4fFCc692AF5d1000277e676819b405A0Fa8478";
-            let toAddress = "0x212781FF156e7e24A4b7aDCc965b5aDe781Dea67";
-            let contract = new web3js.eth.Contract(abiJsonUUToken, contractAddress, {
-                from: fromAddress
-            });
+            window.ethereum.enable().catch(error => {
+                // User denied account access
+                console.log(error)
+            })
+            let fromAddress = await web3js.eth.getCoinbase();
+            console.log("address:%s", fromAddress);
+            let contractAddress = "0xC724803f50125FBdE2214A1B6153818d7c14d791";
+
+            let chain_id = await web3js.eth.net.getId();
+            console.log("chan_id:%d",chain_id);
+
+            let contract = new web3js.eth.Contract(abiJsonUUToken, contractAddress);
+            console.log(contract);
+            let balance = await contract.methods.balanceOf(fromAddress).call();
+            console.log(`balance ${balance}`);
+
+
+            let tokenAmount = web3js.utils.toWei(amount.toString(), 'ether');
+
+
 
             const currentGasPrices = await GetCurrentGasPrices();
-            let nonce = web3js.eth.getTransactionCount(fromAddress);
+            let nonce = await web3js.eth.getTransactionCount(fromAddress);
 // Will call estimate the gas a method execution will take when executed in the EVM without.
 
 
             const nonceHex = web3js.utils.toHex(nonce)
-            let chainIdHex= web3js.utils.toHex(50)
-            let token_id = 0x5678;
-            let transaction = {
-                "value": '0x0', // Only tokens
-                "data": contract.methods.mint(toAddress, token_id).encodeABI(),
-                "from": fromAddress,
-                "to": contractAddress,
-                "nonce": nonceHex,
-                //"gas": web3.utils.toHex(estimateGas),
-                "gasLimit": '0x30D40',
-                // "gasLimit": web3.utils.toHex(estimateGas),
-                "gasPrice": web3js.utils.toHex(Math.trunc(currentGasPrices.medium * 1e9)),
-                "chainId": chainIdHex
-            };
+            console.log(`nonceHex ${nonceHex}`);
+
+            let chainIdHex= web3js.utils.toHex(chain_id);
+            // let transaction = {
+            //     "value": '0x0', // Only tokens
+            //     "data": contract.methods.mint(toAddress, token_id).encodeABI(),
+            //     "from": fromAddress,
+            //     "to": contractAddress,
+            //     "nonce": nonceHex,
+            //     //"gas": web3.utils.toHex(estimateGas),
+            //     "gasLimit": '0x30D40',
+            //     // "gasLimit": web3.utils.toHex(estimateGas),
+            //     "gasPrice": web3js.utils.toHex(Math.trunc(currentGasPrices.medium * 1e9)),
+            //     "chainId": chainIdHex
+            // };
             web3js.eth.getAccounts(function (err, result) {
                 if (err) {
                     console.log("web3.eth.getCoinbase error = " + err);
                 } else {
                     let publicAddress = result[3];
                     console.log("web3.eth.getCoinbase " + result);
-                    contract.methods.mint(toAddress, token_id).send({from:publicAddress, gas: 300000}, function (error, result) {
+                    contract.methods.mint(amount).send({from:fromAddress, gas: 300000}, function (error, result) {
                         if (error != null) {
                             console.log(error)
                         }
@@ -287,7 +307,12 @@ class HelloMessage extends React.Component {
                             amount: Number.parseInt(e.target.value)
                         })
                     }}/></p>
-                    <button onClick={() => this.mintTodo()}>eth token mint todo</button>
+                    <button onClick={() => this.mintTodo(this.state.amount)}>eth token mint todo</button>
+                    <p>amount:<input type="text" onChange={e => {
+                        this.setState({
+                            amount: Number.parseInt(e.target.value)
+                        })
+                    }}/></p>
                 </div>
             </div>
         );
