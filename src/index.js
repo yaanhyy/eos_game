@@ -41,6 +41,7 @@ async function GetCurrentGasPrices() {
 class HelloMessage extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {rate : 0};
     }
 
     componentDidMount() {
@@ -352,6 +353,37 @@ class HelloMessage extends React.Component {
         }
     }
 
+    async getRate(amount) {
+        if (typeof window.ethereum !== 'undefined') {
+
+
+
+            // let toAddress = "0x212781FF156e7e24A4b7aDCc965b5aDe781Dea67";
+            let web3 = window.web3;
+            let web3js = new Web3(window.web3.currentProvider);
+            window.ethereum.enable().catch(error => {
+                // User denied account access
+                console.log(error)
+            })
+            let fromAddress = await web3js.eth.getCoinbase();
+            console.log("address:%s", fromAddress);
+            let contractAddress = "0xC724803f50125FBdE2214A1B6153818d7c14d791";
+
+            let chain_id = await web3js.eth.net.getId();
+            console.log("chan_id:%d", chain_id);
+
+            let uutoken_abi_text = await fetch('/uni_router_v2_abi').then((r) => r.json());
+            console.log(uutoken_abi_text);
+            // let abiJson = JSON.stringify(UUTokenAbi);
+            // console.log(abiJson);
+            let contract = new web3js.eth.Contract(uutoken_abi_text, contractAddress);
+            console.log(contract);
+
+            let balance = await contract.methods.balanceOf(fromAddress).call();
+            console.log(`balance ${balance}`);
+
+        }
+    }
 
     render() {
         return (
@@ -396,8 +428,10 @@ class HelloMessage extends React.Component {
 
                     <button onClick={() => this.addLiquidityTodo(this.state.token_a_amount, this.state.token_b_amount)}>add liquidity todo</button>
                     <p>token a amount:<input type="text" onChange={e => {
+                        let rate = this.getRate(Number.parseInt(e.target.value));
                         this.setState({
-                            token_a_amount: Number.parseInt(e.target.value)
+                            token_a_amount: Number.parseInt(e.target.value),
+                            rate: rate
                         })
                     }}/></p>
                     <p>token b amount:<input type="text" onChange={e => {
@@ -405,6 +439,7 @@ class HelloMessage extends React.Component {
                             token_b_amount: Number.parseInt(e.target.value)
                         })
                     }}/></p>
+                    <p>rate: {this.state.rate}</p>
                 </div>
             </div>
         );
