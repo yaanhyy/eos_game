@@ -353,7 +353,7 @@ class HelloMessage extends React.Component {
         }
     }
 
-    async getRate(amount) {
+    async getRate(amount, type) {
         if (typeof window.ethereum !== 'undefined') {
 
 
@@ -379,11 +379,21 @@ class HelloMessage extends React.Component {
             let contract = new web3js.eth.Contract(uutoken_abi_text, contractAddress);
             console.log(contract);
             // input UU token for weth 0.66UU for 0.964 eth
-            let res = await contract.methods.getAmountsIn(1, ["0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6","0xC724803f50125FBdE2214A1B6153818d7c14d791"]).call();
-            // input weth for UU token 1eth for 0.66 UU ["0xC724803f50125FBdE2214A1B6153818d7c14d791","0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6"]
-            //let res = await contract.methods.getAmountsOut(1, ["0xC724803f50125FBdE2214A1B6153818d7c14d791","0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6"]).call();
+            let res = 0;
+            let index = 0;
+            if (type == "in") {
+                index = 0;
+                res = await contract.methods.getAmountsIn(amount, ["0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6", "0xC724803f50125FBdE2214A1B6153818d7c14d791"]).call();
+            } else {
+                // input weth for UU token 1eth for 0.66 UU ["0xC724803f50125FBdE2214A1B6153818d7c14d791","0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6"]
+                index = 1;
+                res = await contract.methods.getAmountsOut(amount, ["0xC724803f50125FBdE2214A1B6153818d7c14d791","0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6"]).call();
+
+            }
             console.log(`balance ${res}`);
-            return res[0]
+            this.setState({
+                rate: res[index]
+            })
 
         }
     }
@@ -430,19 +440,19 @@ class HelloMessage extends React.Component {
                     }}/></p>
 
                     <button onClick={() => this.addLiquidityTodo(this.state.token_a_amount, this.state.token_b_amount)}>add liquidity todo</button>
-                    <p>token a amount:<input type="text" onChange={e => {
-                        let rate = this.getRate(Number.parseInt(e.target.value));
+                    <p>token UU amount:<input type="text" onChange={e => {
+                        this.getRate(Number.parseInt(e.target.value), "in");
                         this.setState({
                             token_a_amount: Number.parseInt(e.target.value),
-                            rate: rate
                         })
                     }}/></p>
-                    <p>token b amount:<input type="text" onChange={e => {
+                    <p>token WETH amount:<input type="text" onChange={e => {
+                        this.getRate(Number.parseInt(e.target.value), "out");
                         this.setState({
                             token_b_amount: Number.parseInt(e.target.value)
                         })
                     }}/></p>
-                    {/*<p>rate: {this.state.rate}</p>*/}
+                    {<p>rate: {this.state.rate}</p>}
                 </div>
             </div>
         );
